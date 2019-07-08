@@ -50,7 +50,7 @@
     "vscode-chokidar": "2.1.7",
     "vscode-proxy-agent": "0.4.0",
     "vscode-ripgrep": "^1.3.1",
-    "vscode-sqlite3": "4.0.8",
+    "vscode-sqlite3": "git+https://github.com/akimasa/vscode-sqlite3#master",
     "vscode-textmate": "^4.1.1",
     "xterm": "3.15.0-beta67",
     "xterm-addon-search": "0.2.0-beta2",

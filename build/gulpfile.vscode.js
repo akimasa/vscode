@@ -194,7 +194,7 @@ function getElectron(arch) {
 	return () => {
 		const electronOpts = _.extend({}, config, {
 			platform: process.platform,
-			arch,
+			arch: getElectronArch(arch),
 			ffmpegChromium: true,
 			keepDefaultApp: true
 		});
@@ -207,11 +207,20 @@ function getElectron(arch) {
 	};
 }
 
+function getElectronArch(arch) {
+	switch (arch) {
+		case 'arm':
+			return 'armv7l';
+		default:
+			return arch;
+	}
+}
+
+
 gulp.task(task.define('electron', task.series(util.rimraf('.build/electron'), getElectron(process.arch))));
-gulp.task(task.define('electron-ia32', task.series(util.rimraf('.build/electron'), getElectron('ia32'))));
-gulp.task(task.define('electron-x64', task.series(util.rimraf('.build/electron'), getElectron('x64'))));
-gulp.task(task.define('electron-arm', task.series(util.rimraf('.build/electron'), getElectron('armv7l'))));
-gulp.task(task.define('electron-arm64', task.series(util.rimraf('.build/electron'), getElectron('arm64'))));
+['ia32', 'x64', 'arm', 'arm64'].forEach(arch => {
+	gulp.task(task.define(`electron-${arch}`, task.series(util.rimraf('.build/electron'), getElectron(arch))));
+});
 
 /**
  * Compute checksums for some files.
@@ -383,7 +392,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		let result = all
 			.pipe(util.skipDirectories())
 			.pipe(util.fixWin32DirectoryPermissions())
-			.pipe(electron(_.extend({}, config, { platform, arch, ffmpegChromium: true })))
+			.pipe(electron(_.extend({}, config, { platform, arch: getElectronArch(arch), ffmpegChromium: true })))
 			.pipe(filter(['**', '!LICENSE', '!LICENSES.chromium.html', '!version'], { dot: true }));
 
 		// result = es.merge(result, gulp.src('resources/completions/**', { base: '.' }));
